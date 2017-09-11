@@ -1,0 +1,17 @@
+{
+    "routes": [{
+        "name":"Sample Route",
+        "subscriptionId":"*",
+        "resourceProvider":"*",
+        "operationName":"*",
+        "resourceGroup":"*",
+        "actions":[
+            {
+                "name":"Sample Action",
+                "type":"Webhook",
+                "endpoint":""
+            }
+        ]
+
+    }]
+}
