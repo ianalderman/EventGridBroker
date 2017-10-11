@@ -1,5 +1,5 @@
-{
-    "routes": [{
+
+    [{
         "name":"Sample Route",
         "subscriptionId":"*",
         "resourceProvider":"*",
@@ -14,4 +14,3 @@
         ]
 
     }]
-}

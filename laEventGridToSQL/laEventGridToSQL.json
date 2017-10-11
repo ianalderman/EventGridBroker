@@ -1,0 +1,154 @@
+{
+    "$connections": {
+        "value": {
+            "sql": {
+                "connectionId": "/subscriptions/<SUB ID>/resourceGroups/rgEventGrid/providers/Microsoft.Web/connections/sql",
+                "connectionName": "sql",
+                "id": "/subscriptions/<SUB ID>/providers/Microsoft.Web/locations/westus2/managedApis/sql"
+            }
+        }
+    },
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "For_each": {
+                "actions": {
+                    "Insert_row": {
+                        "inputs": {
+                            "body": {
+                                "calcClientIP": "@{body('ParseEventGridMessage')['clientIPAddress']}",
+                                "calcResourceGroup": "@{body('ParseEventGridMessage')['resourceGroup']}",
+                                "calcUPN": "@{body('ParseEventGridMessage')['upn']}",
+                                "calcUser": "@{body('ParseEventGridMessage')['name']}",
+                                "dataCorrelationId": "@items('For_each')?['data']?['correlationId']",
+                                "dataHttpRequest": "@items('For_each')?['data']?['httpRequest']",
+                                "dataOperationName": "@items('For_each')?['data']?['operationName']",
+                                "dataResourceProvider": "@items('For_each')?['data']?['resourceProvider']",
+                                "dataResourceUri": "@items('For_each')?['data']?['resourceUri']",
+                                "dataStatus": "@items('For_each')?['data']?['status']",
+                                "dataSubscriptionId": "@items('For_each')?['data']?['subscriptionId']",
+                                "dataTenantId": "@items('For_each')?['data']?['tenantId']",
+                                "eventId": "@items('For_each')['id']",
+                                "eventTime": "@items('For_each')['eventTime']",
+                                "eventType": "@items('For_each')['eventType']",
+                                "subject": "@items('For_each')['subject']",
+                                "topic": "@items('For_each')['topic']"
+                            },
+                            "host": {
+                                "connection": {
+                                    "name": "@parameters('$connections')['sql']['connectionId']"
+                                }
+                            },
+                            "method": "post",
+                            "path": "/datasets/default/tables/@{encodeURIComponent(encodeURIComponent('[dbo].[EventGridSubscriptionEvent]'))}/items"
+                        },
+                        "runAfter": {
+                            "ParseEventGridMessage": [
+                                "Succeeded"
+                            ]
+                        },
+                        "type": "ApiConnection"
+                    },
+                    "ParseEventGridMessage": {
+                        "inputs": {
+                            "body": {
+                                "claims": "@{items('For_each')?['data']?['claims']}",
+                                "resourceUri": "@{items('For_each')?['data']?['resourceUri']}"
+                            },
+                            "function": {
+                                "id": "/subscriptions/<SUB ID>/resourceGroups/eventgridfunctionapp/providers/Microsoft.Web/sites/eventgridfunctionapp/functions/ParseEventGridMessage"
+                            }
+                        },
+                        "runAfter": {},
+                        "type": "Function"
+                    }
+                },
+                "foreach": "@triggerBody()",
+                "runAfter": {},
+                "type": "Foreach"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {},
+        "parameters": {
+            "$connections": {
+                "defaultValue": {},
+                "type": "Object"
+            }
+        },
+        "triggers": {
+            "manual": {
+                "inputs": {
+                    "schema": {
+                        "items": {
+                            "properties": {
+                                "data": {
+                                    "properties": {
+                                        "authorization": {
+                                            "type": "string"
+                                        },
+                                        "claims": {
+                                            "type": "string"
+                                        },
+                                        "correlationId": {
+                                            "type": "string"
+                                        },
+                                        "httpRequest": {
+                                            "type": "string"
+                                        },
+                                        "operationName": {
+                                            "type": "string"
+                                        },
+                                        "resourceProvider": {
+                                            "type": "string"
+                                        },
+                                        "resourceUri": {
+                                            "type": "string"
+                                        },
+                                        "status": {
+                                            "type": "string"
+                                        },
+                                        "subscriptionId": {
+                                            "type": "string"
+                                        },
+                                        "tenantId": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "eventTime": {
+                                    "type": "string"
+                                },
+                                "eventType": {
+                                    "type": "string"
+                                },
+                                "id": {
+                                    "type": "string"
+                                },
+                                "subject": {
+                                    "type": "string"
+                                },
+                                "topic": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "topic",
+                                "subject",
+                                "eventType",
+                                "eventTime",
+                                "id",
+                                "data"
+                            ],
+                            "type": "object"
+                        },
+                        "type": "array"
+                    }
+                },
+                "kind": "Http",
+                "type": "Request"
+            }
+        }
+    }
+}

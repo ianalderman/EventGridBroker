@@ -1,0 +1,15 @@
+{
+    "Policy": [{
+        "subscriptionId": "*",
+        "defaultThreshold": "1",
+        "numberOfDaysForTrend": "14",
+        "actions": [
+            {
+                "name": "Send alert email",
+                "type":"Email",
+                "endPoint": ""
+
+            }
+        ]
+    }]
+}

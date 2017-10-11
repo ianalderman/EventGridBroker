@@ -1,0 +1,17 @@
+{
+  "bindings": [
+    {
+      "type": "eventGridTrigger",
+      "name": "eventGridEvent",
+      "direction": "in"
+    },
+    {
+      "type": "blob",
+      "name": "inputBlob",
+      "path": "routes/routes.json",
+      "connection": "eventgridbroker_STORAGE",
+      "direction": "in"
+    }
+  ],
+  "disabled": false
+}
